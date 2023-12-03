@@ -1,0 +1,25 @@
+version: "3"
+services:
+  nginx-reverse-proxy:
+    container_name: reverse-proxy
+    build:
+      context: .
+      dockerfile: dockerfile
+      #dockerfileにproxyアドレスを引数として渡す
+      args:
+        - http_tmp=$http_proxy
+        - https_tmp=$https_proxy
+    #カレントディレクトリ上にあるET-BERTをコンテナ内の/ET-BERTにマウント
+    volumes:
+      - ./workspace:/workspace
+    #ワーキングディレクトリを/workspaceに設定
+    working_dir: /workspace
+    #コンテナ内でbashを起動
+    privileged: true
+    tty: true
+    command: /sbin/init
+    #proxyアドレスを読込む
+    env_file:
+      - proxy.env
+    ports:
+      - "49152:49152"
